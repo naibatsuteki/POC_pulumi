@@ -1,0 +1,30 @@
+on:
+  push:
+    branches:
+    - dev/*
+
+jobs:
+  deploy:
+    name: 'Preview changes to dev'
+    runs-on: ubuntu-latest
+    steps:
+    - name: 'Checking out repo code'
+      uses: actions/checkout@v2
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: Infrastructure update
+      uses: pulumi/actions@v4
+      with:
+        command: preview
+        stack-name: dev
+      env:
+        PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+    - name: Azure Logout
+      uses: azure/CLI@v1
+      with:
+        inlineScript: |
+          az logout
+          az cache purge
+          az account clear
