@@ -23,6 +23,7 @@ static_website = storage.StorageAccountStaticWebsite(
     account_name=account.name,
     resource_group_name=resource_group.name,
     index_document="index.html",
+    error404_document="",
 )
 
 # Export the primary key of the Storage Account
