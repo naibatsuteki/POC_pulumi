@@ -4,8 +4,14 @@ import pulumi
 from pulumi_azure_native import storage
 from pulumi_azure_native import resources
 
+# Get current stack info
+current_stack = pulumi.get_stack()
+
 # Create an Azure Resource Group
-resource_group = resources.ResourceGroup("resource_group")
+resource_group = resources.ResourceGroup(
+    "resource_group",
+    resource_group_name=f"{current_stack}pulumiqs"
+    )
 
 # Create an Azure resource (Storage Account)
 account = storage.StorageAccount(
@@ -15,6 +21,7 @@ account = storage.StorageAccount(
         name=storage.SkuName.STANDARD_LRS,
     ),
     kind=storage.Kind.STORAGE_V2,
+    account_name=f"{current_stack}pulumiqs"
 )
 
 # Enable static website support
