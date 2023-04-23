@@ -14,7 +14,9 @@ jobs:
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
-    - name: Infrastructure update
+    - name: Show current account
+      run: "az account show"
+    - name: Infrastructure preview
       uses: pulumi/actions@v4
       with:
         command: preview
