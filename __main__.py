@@ -1,11 +1,33 @@
 """An Azure RM Python Pulumi program"""
+from pathlib import Path
 
+import jinja2
 import pulumi
 from pulumi_azure_native import storage
 from pulumi_azure_native import resources
 
 # Get current stack info
 current_stack = pulumi.get_stack()
+template_file = Path("assets/templates/index.html")
+result_file = Path("dist/index.html")
+
+data = {
+    "stack_name": current_stack
+}
+
+# Load the Jinja template
+with open(template_file, "r") as file:
+    template = jinja2.Template(file.read())
+
+
+# Render the template with the data
+rendered_template = template.render(data)
+
+
+# Write the rendered template to a file
+result_file.parent.mkdir(parents=True, exist_ok=True)
+with open(result_file, "w") as file:
+    file.write(rendered_template)
 
 # Create an Azure Resource Group
 resource_group = resources.ResourceGroup(
@@ -52,7 +74,7 @@ index_html = storage.Blob(
     resource_group_name=resource_group.name,
     account_name=account.name,
     container_name=static_website.container_name,
-    source=pulumi.FileAsset("index.html"),
+    source=pulumi.FileAsset(result_file),
     content_type="text/html",
 )
 
